@@ -76,6 +76,7 @@ import javax.inject.Provider;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
+import ml.docilealligator.infinityforreddit.thing.FetchRedgifsVideoLinks;
 import ml.docilealligator.infinityforreddit.video.FetchVideoLinkListener;
 import ml.docilealligator.infinityforreddit.PostGalleryGridLayoutItemDecoration;
 import ml.docilealligator.infinityforreddit.R;
@@ -2892,14 +2893,10 @@ public class PostRecyclerViewAdapter extends PagingDataAdapter<Post, RecyclerVie
 
         void loadVideo(int position) {
             Post post = getPost();
-            /*if (post.isRedgifs() && !post.isLoadedStreamableVideoAlready()) {
-                fetchRedgifsOrStreamableVideoCall =
-                        mRedgifsRetrofit.create(RedgifsAPI.class).getRedgifsData(
-                                APIUtils.getRedgifsOAuthHeader(mCurrentAccountSharedPreferences
-                                        .getString(SharedPreferencesUtils.REDGIFS_ACCESS_TOKEN, "")),
-                                post.getRedgifsId(), APIUtils.USER_AGENT);
-                FetchRedgifsVideoLinks.fetchRedgifsVideoLinksInRecyclerViewAdapter(mExecutor, new Handler(),
-                        fetchRedgifsOrStreamableVideoCall,
+            if (post.isRedgifs() && !post.isLoadedStreamableVideoAlready()) {
+                // Fetch the signed RedGifs link from the API so the inline player gets the version with audio
+                FetchRedgifsVideoLinks.fetchRedgifsVideoLinks(mExecutor, new Handler(), mRedgifsRetrofit,
+                        mCurrentAccountSharedPreferences, post.getRedgifsId(),
                         new FetchVideoLinkListener() {
                             @Override
                             public void onFetchRedgifsVideoLinkSuccess(String webm, String mp4) {
@@ -2918,7 +2915,7 @@ public class PostRecyclerViewAdapter extends PagingDataAdapter<Post, RecyclerVie
                                 }
                             }
                         });
-            } else */if(post.isStreamable() && !post.isLoadedStreamableVideoAlready()) {
+            } else if(post.isStreamable() && !post.isLoadedStreamableVideoAlready()) {
                 fetchRedgifsOrStreamableVideoCall =
                         mStreamableApiProvider.get().getStreamableData(post.getStreamableShortCode());
                 FetchStreamableVideo.fetchStreamableVideoInRecyclerViewAdapter(mExecutor, new Handler(),

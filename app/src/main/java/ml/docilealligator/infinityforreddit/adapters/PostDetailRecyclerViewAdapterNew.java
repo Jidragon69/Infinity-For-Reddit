@@ -73,6 +73,7 @@ import io.noties.markwon.MarkwonPlugin;
 import io.noties.markwon.core.MarkwonTheme;
 import jp.wasabeef.glide.transformations.BlurTransformation;
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
+import ml.docilealligator.infinityforreddit.thing.FetchRedgifsVideoLinks;
 import ml.docilealligator.infinityforreddit.video.FetchVideoLinkListener;
 import ml.docilealligator.infinityforreddit.PostGalleryGridLayoutItemDecoration;
 import ml.docilealligator.infinityforreddit.R;
@@ -790,14 +791,10 @@ public class PostDetailRecyclerViewAdapterNew extends RecyclerView.Adapter<Recyc
                     }
                 }
 
-                /*if (mPost.isRedgifs() && !mPost.isLoadedStreamableVideoAlready()) {
-                    ((PostDetailBaseVideoAutoplayViewHolder) holder).fetchRedgifsOrStreamableVideoCall =
-                            mRedgifsRetrofit.create(RedgifsAPI.class)
-                                    .getRedgifsData(APIUtils.getRedgifsOAuthHeader(
-                                            mCurrentAccountSharedPreferences.getString(SharedPreferencesUtils.REDGIFS_ACCESS_TOKEN, "")),
-                                            mPost.getRedgifsId(), APIUtils.USER_AGENT);
-                    FetchRedgifsVideoLinks.fetchRedgifsVideoLinksInRecyclerViewAdapter(mExecutor, new Handler(),
-                            ((PostDetailBaseVideoAutoplayViewHolder) holder).fetchRedgifsOrStreamableVideoCall,
+                if (mPost.isRedgifs() && !mPost.isLoadedStreamableVideoAlready()) {
+                    // Fetch the signed RedGifs link from the API so the inline player gets the version with audio
+                    FetchRedgifsVideoLinks.fetchRedgifsVideoLinks(mExecutor, new Handler(), mRedgifsRetrofit,
+                            mCurrentAccountSharedPreferences, mPost.getRedgifsId(),
                             new FetchVideoLinkListener() {
                                 @Override
                                 public void onFetchRedgifsVideoLinkSuccess(String webm, String mp4) {
@@ -812,7 +809,7 @@ public class PostDetailRecyclerViewAdapterNew extends RecyclerView.Adapter<Recyc
                                     ((PostDetailBaseVideoAutoplayViewHolder) holder).loadFallbackDirectVideo();
                                 }
                             });
-                } else */if(mPost.isStreamable() && !mPost.isLoadedStreamableVideoAlready()) {
+                } else if(mPost.isStreamable() && !mPost.isLoadedStreamableVideoAlready()) {
                     ((PostDetailBaseVideoAutoplayViewHolder) holder).fetchRedgifsOrStreamableVideoCall =
                             mStreamableApiProvider.get().getStreamableData(mPost.getStreamableShortCode());
                     FetchStreamableVideo.fetchStreamableVideoInRecyclerViewAdapter(mExecutor, new Handler(),
